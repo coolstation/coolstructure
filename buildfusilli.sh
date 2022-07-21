@@ -5,10 +5,32 @@ DMB_NAME="coolstation"
 
 BYOND_DIR="/home/ss13/byond"
 COOLSERV="/home/ss13/coolserv"
-DMB_DIR="${COOLSERV}/build"
+
+function dirswap {
+    # Pointer to live is updated to the last build, so the server will
+    # load the freshly-built code the next time it starts up.
+    rm ${COOLSERV}/live
+    ln -s ${OLDBILD} ${COOLSERV}/live
+
+    # And the pointer to the build directory is updated to the other
+    # dir.
+    rm ${COOLSERV}/build
+    ln -s ${OLDLIVE} ${COOLSERV}/build
+}
+
+if [[ -f ${COOLSERV}/build/daemon-in-the-dark ]]
+then
+    # Server has NOT had a round-end since the last time we built, is
+    # still running from this directory, and is scratching 'No Kill I'
+    # on the wall.
+
+    # Swap directories so we're not stomping on the eggs^Wrunning
+    # server.
+    dirswap
+fi
+
 OLDLIVE=`readlink -f ${COOLSERV}/live`
 OLDBILD=`readlink -f ${COOLSERV}/build`
-
 echo "Building to ${OLDBILD}"
 
 # Grab updated source
@@ -31,11 +53,11 @@ if [ $? -ne 0 ]; then
 fi
 
 # *shovelling sounds*
-cp -r ${CODEBASE_DIR}/* ${DMB_DIR}
-cp ${BYOND_DIR}/server_conf/config.txt ${DMB_DIR}/config/
+cp -r ${CODEBASE_DIR}/* ${OLDBILD}
+cp ${BYOND_DIR}/server_conf/config.txt ${OLDBILD}/config/
 
 # Oho ho ho
-cd ${DMB_DIR}/browserassets
+cd ${OLDBILD}/browserassets
 
 # Mmhm!
 npm install
@@ -56,7 +78,7 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
-zip ${DMB_DIR}/${DMB_NAME}.rsc.zip ${DMB_DIR}/${DMB_NAME}.rsc
+zip ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc
 if [ $? -ne 0 ]; then
     # zip had an oopsie
     exit 5
@@ -64,7 +86,7 @@ fi
 
 # Fire the assets down the tube to the cdn
 rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
-      ${DMB_DIR}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/
+      ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/
 
 if [ $? -ne 0 ]; then
     # rsync went wrong :(
@@ -73,16 +95,12 @@ fi
 
 # And the resource file too
 rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
-      ${DMB_DIR}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/
+      ${OLDBILD}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/
 
 if [ $? -ne 0 ]; then
     # Nooooo... so close!
     exit 7
 fi
 
-
-rm ${COOLSERV}/live
-ln -s ${OLDBILD} ${COOLSERV}/live
-
-rm ${COOLSERV}/build
-ln -s ${OLDLIVE} ${COOLSERV}/build
+# Swap the directories so that the server will load our newly built code for the next round!
+dirswap
