@@ -78,7 +78,8 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
-zip -j  ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc
+# Create a zip file of the rsc with the same name in the same directory, discard paths
+zip -j ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc
 if [ $? -ne 0 ]; then
     # zip had an oopsie
     exit 5
