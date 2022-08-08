@@ -78,7 +78,7 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
-zip ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc
+zip -j  ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc
 if [ $? -ne 0 ]; then
     # zip had an oopsie
     exit 5
