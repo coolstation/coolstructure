@@ -15,7 +15,7 @@ fi
 
 # Fire the assets down the tube to the cdn
 rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
-      ${CODEBASE_DIR} coolstation.space:~/www/
+      ${CODEBASE_DIR}/ coolstation.space:~/www
 
 if [ $? -ne 0 ]; then
     # rsync went wrong :(
