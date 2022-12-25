@@ -44,6 +44,15 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+# Change the build day & month, and all that, so we get nice snazzy holiday/event
+# stuff. (e.g. Halloween, Xmas, etc.)
+
+# match    V   this       V  & 1 or more nums - replace with matched bit in parens, plus the relevant day/month/hour/minute
+sed -Ei "s/(BUILD_TIME_DAY) [[:digit:]]+/\1 `date +%d`/" _std/__build.dm
+sed -Ei "s/(BUILD_TIME_MONTH) [[:digit:]]+/\1 `date +%m`/" _std/__build.dm
+sed -Ei "s/(BUILD_TIME_HOUR) [[:digit:]]+/\1 `date +%H`/" _std/__build.dm
+sed -Ei "s/(BUILD_TIME_MINUTE) [[:digit:]]+/\1 `date +%M`/" _std/__build.dm
+
 # Build da sauce!
 ${BYOND_DIR}/bin/DreamMaker ${DMB_NAME}
 
