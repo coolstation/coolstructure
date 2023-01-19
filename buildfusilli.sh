@@ -18,7 +18,10 @@ function dirswap {
     ln -s ${OLDLIVE} ${COOLSERV}/build
 }
 
-if [[ -f ${COOLSERV}/build/daemon-in-the-dark ]]
+OLDLIVE=`readlink -f ${COOLSERV}/live`
+OLDBILD=`readlink -f ${COOLSERV}/build`
+
+if [[ -f ${OLDBILD}/daemon-in-the-dark ]]
 then
     # Server has NOT had a round-end since the last time we built, is
     # still running from this directory, and is scratching 'No Kill I'
@@ -27,10 +30,16 @@ then
     # Swap directories so we're not stomping on the eggs^Wrunning
     # server.
     dirswap
+
+    OLDLIVE=`readlink -f ${COOLSERV}/live`
+    OLDBILD=`readlink -f ${COOLSERV}/build`
+    if [[ -f ${OLDBILD}/daemon-in-the-dark ]]
+    then
+	# fuck *me* running, why are there two server lockfiles?
+	exit 69
+    fi
 fi
 
-OLDLIVE=`readlink -f ${COOLSERV}/live`
-OLDBILD=`readlink -f ${COOLSERV}/build`
 echo "Building to ${OLDBILD}"
 
 # Grab updated source
@@ -60,6 +69,16 @@ if [ $? -ne 0 ]; then
     # DreamMaker failed. Boo!
     exit 2
 fi
+
+# god, I'm getting sick of dealing with potential weird-ass race conditions.
+# Try, one last goddamn time, to check ourselves before we wreck ourselves.
+if [[ -f ${OLDBILD}/daemon-in-the-dark ]]
+then
+    exit 68
+fi
+
+# lockfile, stop the server from trying to do stuff with this dir.
+touch ${OLDBILD}/coeding-sounds
 
 # *shovelling sounds*
 cp -r ${CODEBASE_DIR}/* ${OLDBILD}
@@ -111,6 +130,9 @@ if [ $? -ne 0 ]; then
     # Nooooo... so close!
     exit 7
 fi
+
+# Clean up our lockfile
+rm ${OLDBILD}/coeding-sounds
 
 # Swap the directories so that the server will load our newly built code for the next round!
 dirswap
