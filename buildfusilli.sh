@@ -44,7 +44,7 @@ echo "Building to ${OLDBILD}"
 
 # Grab updated source
 cd ${CODEBASE_DIR}
-git pull --recurse-submodules
+git pull --recurse-submodules &> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
    # Either the git pull, or the git merge, failed. *sad-trombone*
@@ -63,7 +63,7 @@ sed -Ei "s/(BUILD_TIME_HOUR) [[:digit:]]+/\1 `date +%-H`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_MINUTE) [[:digit:]]+/\1 `date +%-M`/" _std/__build.dm
 
 # Build da sauce!
-${BYOND_DIR}/bin/DreamMaker ${DMB_NAME}
+${BYOND_DIR}/bin/DreamMaker ${DMB_NAME} &> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
     # DreamMaker failed. Boo!
@@ -88,13 +88,13 @@ cp ${BYOND_DIR}/server_conf/config.txt ${OLDBILD}/config/
 cd ${OLDBILD}/browserassets
 
 # Mmhm!
-npm install
+npm install &> ${COOLSERV}/buildlog.txt
 if [ $? -ne 0 ]; then
     # NPM! You fail us! >:C
     exit 3
 fi
 
-grunt build-cdn --servertype="main"
+grunt build-cdn --servertype="main" &> ${COOLSERV}/buildlog.txt
 if [ $? -ne 0 ]; then
     # Grunt had a whoopsie
     # 1: Fatal error
@@ -107,7 +107,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Create a zip file of the rsc with the same name in the same directory, discard paths
-zip -j ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc
+zip -j ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc &> ${COOLSERV}/buildlog.txt
 if [ $? -ne 0 ]; then
     # zip had an oopsie
     exit 5
@@ -115,7 +115,7 @@ fi
 
 # Fire the assets down the tube to the cdn
 rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
-      ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/
+      ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/ &> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
     # rsync went wrong :(
@@ -124,7 +124,7 @@ fi
 
 # And the resource file too
 rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
-      ${OLDBILD}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/
+      ${OLDBILD}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/ &> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
     # Nooooo... so close!
@@ -136,3 +136,6 @@ rm ${OLDBILD}/coeding-sounds
 
 # Swap the directories so that the server will load our newly built code for the next round!
 dirswap
+
+# Clean up our mess.
+rm ${COOLSERV}/buildlog.txt
