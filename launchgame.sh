@@ -22,10 +22,21 @@ do
 	# If this file exists, the fusilli build script will not overwrite this directory.
 	touch ${LIVEDIR}/daemon-in-the-dark
 
-	# Launch the game server
-        /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted
+	# Launch the game server in background.
+	# Yes, I really actually meant in the background this time!
+        /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted &
 
-	# Clean up after ourselves, since we're not using theis directory any more
+	# Grab the background process' PID
+	DD_PID=$!
+
+	# Put the lime in the coconut
+	echo ${DD_PID} > ${LIVEDIR}/daemon-in-the-dark
+
+	# Bring the server process back out of the background, and
+	# wait for it to serve its time.
+	wait ${DD_PID}
+
+	# Clean up after ourselves, since we're not using this directory any more
 	rm ${LIVEDIR}/daemon-in-the-dark
     fi
     sleep 5
