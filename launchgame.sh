@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LIVEDIR=/home/ss13/coolserv/live
+LOCKFILE=${LIVEDIR}/daemon-in-the-dark
 
 for t in {1..12}
 do
@@ -20,7 +21,7 @@ do
 	touch ${LIVEDIR}/data/hard-reboot
 
 	# If this file exists, the fusilli build script will not overwrite this directory.
-	touch ${LIVEDIR}/daemon-in-the-dark
+	touch ${LOCKFILE}
 
 	# Launch the game server in background.
 	# Yes, I really actually meant in the background this time!
@@ -30,14 +31,14 @@ do
 	DD_PID=$!
 
 	# Put the lime in the coconut
-	echo ${DD_PID} > ${LIVEDIR}/daemon-in-the-dark
+	echo ${DD_PID} > ${LOCKFILE}
 
 	# Bring the server process back out of the background, and
 	# wait for it to serve its time.
 	wait ${DD_PID}
 
 	# Clean up after ourselves, since we're not using this directory any more
-	rm ${LIVEDIR}/daemon-in-the-dark
+	rm ${LOCKFILE}
     fi
     sleep 5
 done
