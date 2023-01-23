@@ -23,20 +23,29 @@ OLDBILD=`readlink -f ${COOLSERV}/build`
 
 if [[ -f ${OLDBILD}/daemon-in-the-dark ]]
 then
-    # Server has NOT had a round-end since the last time we built, is
-    # still running from this directory, and is scratching 'No Kill I'
-    # on the wall.
-
-    # Swap directories so we're not stomping on the eggs^Wrunning
-    # server.
-    dirswap
-
-    OLDLIVE=`readlink -f ${COOLSERV}/live`
-    OLDBILD=`readlink -f ${COOLSERV}/build`
-    if [[ -f ${OLDBILD}/daemon-in-the-dark ]]
+    # Search for DreamDaemon process, get its PID, compare it with the PID in the lockfile.
+    if [[ "$(ps -C DreamDaemon | tail -n 1 | awk '{print $1}')" == $(<"${OLDBILD}/daemon-in-the-dark") ]]
     then
-	# fuck *me* running, why are there two server lockfiles?
-	exit 69
+	# Lockfile is current.
+
+	# Server has NOT had a round-end since the last time we built, is
+	# still running from this directory, and is scratching 'No Kill I'
+	# on the wall.
+
+	# Swap directories so we're not stomping on the eggs^Wrunning
+	# server.
+	dirswap
+
+	OLDLIVE=`readlink -f ${COOLSERV}/live`
+	OLDBILD=`readlink -f ${COOLSERV}/build`
+	if [[ -f ${OLDBILD}/daemon-in-the-dark ]]
+	then
+	    # This must be a stale lockfile.
+	    rm ${OLDBILD}/daemon-in-the-dark
+	fi
+    else
+	# Lockfile is stale.
+	rm ${OLDBILD}/daemon-in-the-dark
     fi
 fi
 
