@@ -23,7 +23,7 @@ do
 	touch ${LIVEDIR}/daemon-in-the-dark
 
 	# Launch the game server
-        /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted &
+        /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted
 
 	# Clean up after ourselves, since we're not using theis directory any more
 	rm ${LIVEDIR}/daemon-in-the-dark
