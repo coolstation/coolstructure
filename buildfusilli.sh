@@ -51,8 +51,16 @@ fi
 
 echo "Building to ${OLDBILD}"
 
-# Grab updated source
 cd ${CODEBASE_DIR}
+# Throw away our local changes. Let this be a lesson to you: don't edit the code directly on the server.
+git reset --hard master
+
+if [ $? -ne 0 ]; then
+    # did we died?
+    exit 1
+fi
+
+# Grab updated source
 git pull --recurse-submodules &> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
