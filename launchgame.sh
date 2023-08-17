@@ -33,6 +33,9 @@ do
 	# Put the lime in the coconut
 	echo ${DD_PID} > ${LOCKFILE}
 
+	# A little delayed build action, maybe
+	./delaybuild.sh ${DD_PID} &
+
 	# Bring the server process back out of the background, and
 	# wait for it to serve its time.
 	wait ${DD_PID}
