@@ -14,8 +14,8 @@ sleep 5m
 if [[ -n "$(ps -q $1 -o comm=)" ]]
 then
     # Server's still up, I guess! Launch the build script!
-    echo "launching build script at $(SCRIPTHOLE), from $(PWD)" > /home/ss13/delay_status
-    $(SCRIPTHOLE)/buildfusilli.sh
+    echo "launching build script at ${SCRIPTHOLE}, from ${PWD}" > /home/ss13/delay_status
+    ${SCRIPTHOLE}/buildfusilli.sh
 else
     echo "`date --iso-8601=seconds` - Couldn't find DreamDaemon at $1: '$(ps -q $1 -o comm=)'." > /home/ss13/delay_status
 fi
