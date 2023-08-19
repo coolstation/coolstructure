@@ -19,6 +19,4 @@ then
 else
     echo "`date --iso-8601=seconds` - Couldn't find DreamDaemon at $1: '$(ps -q $1 -o comm=)'." > /home/ss13/delay_status
 fi
-
-echo "builddelay done" > /home/ss13/delay_status
 # Our work here is done.
