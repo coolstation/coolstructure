@@ -25,6 +25,7 @@ do
 
 	# Launch the game server in background.
 	# Yes, I really actually meant in the background this time!
+		echo "ok so this is the line before the server should launch, and im excited?????" > ./fart_busshole
         /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted &
 
 	# Grab the background process' PID
@@ -34,6 +35,7 @@ do
 	echo ${DD_PID} > ${LOCKFILE}
 
 	# A little delayed build action, maybe
+	echo "ok so this is the line before the delaybuild should launch, and im gay?????" > ./fart_busshole
 	/bin/bash /home/ss13/coolstructure/delaybuild.sh ${DD_PID} &
 
 	# Bring the server process back out of the background, and
