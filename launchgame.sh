@@ -34,7 +34,7 @@ do
 	echo ${DD_PID} > ${LOCKFILE}
 
 	# A little delayed build action, maybe
-	/home/ss13/coolstructure/delaybuild.sh ${DD_PID} &
+	/bin/bash /home/ss13/coolstructure/delaybuild.sh ${DD_PID} &
 
 	# Bring the server process back out of the background, and
 	# wait for it to serve its time.
