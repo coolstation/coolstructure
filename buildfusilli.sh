@@ -131,7 +131,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Fire the assets down the tube to the cdn
-rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
+# Temporarily removing --delete from this one while I (Bob) tinker with CDN
+rsync -avz --exclude ".htaccess" --exclude ".ftpquota" \
       ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/ &> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
