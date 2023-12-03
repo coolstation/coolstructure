@@ -60,8 +60,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "########## Stage 1: Updating Source" > ${COOLSERV}/buildlog.txt
+
 # Grab updated source
-git pull --recurse-submodules &> ${COOLSERV}/buildlog.txt
+git pull --recurse-submodules &>> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
    # Either the git pull, or the git merge, failed. *sad-trombone*
@@ -79,8 +81,10 @@ sed -Ei "s/(BUILD_TIME_MONTH)\s+[[:digit:]]+/\1 `date +%-m`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_HOUR)\s+[[:digit:]]+/\1 `date +%-H`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_MINUTE)\s+[[:digit:]]+/\1 `date +%-M`/" _std/__build.dm
 
+echo "########## Stage 2: DreamMaker" >> ${COOLSERV}/buildlog.txt
+
 # Build da sauce!
-${BYOND_DIR}/bin/DreamMaker ${DMB_NAME} &> ${COOLSERV}/buildlog.txt
+${BYOND_DIR}/bin/DreamMaker ${DMB_NAME} &>> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
     # DreamMaker failed. Boo!
@@ -104,14 +108,18 @@ cp ${BYOND_DIR}/server_conf/config.txt ${OLDBILD}/config/
 # Oho ho ho
 cd ${OLDBILD}/browserassets
 
+echo "########## Stage 3: NPM" >> ${COOLSERV}/buildlog.txt
+
 # Mmhm!
-npm install &> ${COOLSERV}/buildlog.txt
+npm install &>> ${COOLSERV}/buildlog.txt
 if [ $? -ne 0 ]; then
     # NPM! You fail us! >:C
     exit 3
 fi
 
-grunt build-cdn --servertype="main" &> ${COOLSERV}/buildlog.txt
+echo "########## Stage 4: Grunt" >> ${COOLSERV}/buildlog.txt
+
+grunt build-cdn --servertype="main" &>> ${COOLSERV}/buildlog.txt
 if [ $? -ne 0 ]; then
     # Grunt had a whoopsie
     # 1: Fatal error
@@ -123,26 +131,32 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
+echo "########## Stage 5: Zip RSC"
+
 # Create a zip file of the rsc with the same name in the same directory, discard paths
-zip -j ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc &> ${COOLSERV}/buildlog.txt
+zip -j ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc &>> ${COOLSERV}/buildlog.txt
 if [ $? -ne 0 ]; then
     # zip had an oopsie
     exit 5
 fi
 
+echo "########## Stage 6: Sync assets to the CDN"
+
 # Fire the assets down the tube to the cdn
 # Temporarily removing --delete from this one while I (Bob) tinker with CDN
 rsync -avz --exclude ".htaccess" --exclude ".ftpquota" \
-      ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/ &> ${COOLSERV}/buildlog.txt
+      ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/ &>> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
     # rsync went wrong :(
     exit 6
 fi
 
+echo "########## Stage 7: Sync RSC to CDN"
+
 # And the resource file too
 rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
-      ${OLDBILD}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/ &> ${COOLSERV}/buildlog.txt
+      ${OLDBILD}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/ &>> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
     # Nooooo... so close!
