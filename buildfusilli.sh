@@ -49,7 +49,7 @@ then
     fi
 fi
 
-echo "Building to ${OLDBILD}"
+echo "Building to ${OLDBILD} at `date`" > ${COOLSERV}/buildlog.txt
 
 cd ${CODEBASE_DIR}
 # Throw away our local changes. Let this be a lesson to you: don't edit the code directly on the server.
@@ -60,7 +60,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "########## Stage 1: Updating Source" > ${COOLSERV}/buildlog.txt
+echo "########## Stage 1: Updating Source" >> ${COOLSERV}/buildlog.txt
 
 # Grab updated source
 git pull --recurse-submodules &>> ${COOLSERV}/buildlog.txt
@@ -131,7 +131,7 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
-echo "########## Stage 5: Zip RSC"
+echo "########## Stage 5: Zip RSC" >> ${COOLSERV}/buildlog.txt
 
 # Create a zip file of the rsc with the same name in the same directory, discard paths
 zip -j ${OLDBILD}/${DMB_NAME}.rsc.zip ${OLDBILD}/${DMB_NAME}.rsc &>> ${COOLSERV}/buildlog.txt
@@ -140,11 +140,11 @@ if [ $? -ne 0 ]; then
     exit 5
 fi
 
-echo "########## Stage 6: Sync assets to the CDN"
+echo "########## Stage 6: Sync assets to the CDN" >> ${COOLSERV}/buildlog.txt
 
 # Fire the assets down the tube to the cdn
 # Temporarily removing --delete from this one while I (Bob) tinker with CDN
-rsync -avz --exclude ".htaccess" --exclude ".ftpquota" \
+rsync -avz --exclude ".htaccess" --exclude ".ftpquota" --timeout=300 \
       ${OLDBILD}/browserassets/build/ coolstation.space:~/cdn.coolstation.space/ &>> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
@@ -152,10 +152,10 @@ if [ $? -ne 0 ]; then
     exit 6
 fi
 
-echo "########## Stage 7: Sync RSC to CDN"
+echo "########## Stage 7: Sync RSC to CDN" >> ${COOLSERV}/buildlog.txt
 
 # And the resource file too
-rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" \
+rsync -avz --delete --exclude ".htaccess" --exclude ".ftpquota" --timeout=300 \
       ${OLDBILD}/coolstation.rsc.zip  coolstation.space:~/cdn.coolstation.space/ &>> ${COOLSERV}/buildlog.txt
 
 if [ $? -ne 0 ]; then
@@ -163,11 +163,16 @@ if [ $? -ne 0 ]; then
     exit 7
 fi
 
+echo "########## Lockfile cleanup" >> ${COOLSERV}/buildlog.txt
+
 # Clean up our lockfile
 rm ${OLDBILD}/coeding-sounds
 
+echo "########## dirswap" >> ${COOLSERV}/buildlog.txt
 # Swap the directories so that the server will load our newly built code for the next round!
 dirswap
 
-# Clean up our mess.
-rm ${COOLSERV}/buildlog.txt
+echo "Done at `date`" >> ${COOLSERV}/buildlog.txt
+
+# Clean up our mess. Temporarily disabled so we have a record of the last build.
+# rm ${COOLSERV}/buildlog.txt
