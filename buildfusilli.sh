@@ -80,6 +80,11 @@ sed -Ei "s/(BUILD_TIME_DAY)\s+[[:digit:]]+/\1 `date +%-d`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_MONTH)\s+[[:digit:]]+/\1 `date +%-m`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_HOUR)\s+[[:digit:]]+/\1 `date +%-H`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_MINUTE)\s+[[:digit:]]+/\1 `date +%-M`/" _std/__build.dm
+if [[ -f ${COOLSERV}/map_override ]]
+then
+    map=`cat ${COOLSERV}/map_override`
+    sed -i "1s/^/$map\n/" ${DMB_NAME}.dme
+fi
 
 echo "########## Stage 2: DreamMaker" >> ${COOLSERV}/buildlog.txt
 
