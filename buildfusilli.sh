@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /home/ss13/byond/bin/byondsetup
+
 CODEBASE_DIR="/home/ss13/coolstation"
 DMB_NAME="coolstation"
 

@@ -3,6 +3,9 @@
 LIVEDIR=/home/ss13/coolserv/live
 LOCKFILE=${LIVEDIR}/daemon-in-the-dark
 
+source /home/ss13/byond/bin/byondsetup
+
+
 for t in {1..12}
 do
     if [ -z "$(ps -C DreamDaemon | grep DreamDaemon)" ]
