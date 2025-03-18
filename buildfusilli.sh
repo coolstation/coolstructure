@@ -89,7 +89,7 @@ VCS_REVISION=`echo ${VCS_COMMIT_STR} | cut -d ' ' -f1`
 VCS_AUTHOR=`echo ${VCS_COMMIT_STR} | cut -d ' ' -f2`
 
 sed -Ei "s/(^var\/global\/vcs_revision.*\=).*/\1 \"${VCS_REVISION}\"/" _std/__build.dm
-sed -Ei "s/(^var\/global\/vcs_revision.*\=).*/\1 \"${VCS_AUTHOR}\"/" _std/__build.dm
+sed -Ei "s/(^var\/global\/vcs_author.*\=).*/\1 \"${VCS_AUTHOR}\"/" _std/__build.dm
 
 
 
