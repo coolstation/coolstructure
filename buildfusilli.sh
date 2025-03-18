@@ -83,6 +83,16 @@ sed -Ei "s/(BUILD_TIME_MONTH)\s+[[:digit:]]+/\1 `date +%-m`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_HOUR)\s+[[:digit:]]+/\1 `date +%-H`/" _std/__build.dm
 sed -Ei "s/(BUILD_TIME_MINUTE)\s+[[:digit:]]+/\1 `date +%-M`/" _std/__build.dm
 
+# VCS Revision & Author, for changelog porpoises
+VCS_COMMIT_STR=`git show --format="%h %an" | head -n 1`
+VCS_REVISION=`echo ${VCS_COMMIT_STR} | cut -d ' ' -f1`
+VCS_AUTHOR=`echo ${VCS_COMMIT_STR} | cut -d ' ' -f2`
+
+sed -Ei "s/(^var\/global\/vcs_revision.*\=).*/\1 \"${VCS_REVISION}\"/" _std/__build.dm
+sed -Ei "s/(^var\/global\/vcs_revision.*\=).*/\1 \"${VCS_AUTHOR}\"/" _std/__build.dm
+
+
+
 echo "########## Stage 2: DreamMaker" >> ${COOLSERV}/buildlog.txt
 
 # Build da sauce!
