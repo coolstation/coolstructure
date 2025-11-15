@@ -20,6 +20,37 @@ function dirswap {
     ln -s ${OLDLIVE} ${COOLSERV}/build
 }
 
+# Map change?
+# (once again, I wrote this while half asleep - Tam)
+
+if [ "$#" -gt 0 ]; then
+    # We're gonna do a map change!
+    case $1 in
+	gehenna)
+	    "MAP_OVERRIDE_GEHENNA" > ${COOLSERV}/next_map
+	;;
+	chunk)
+	    echo "MAP_OVERRIDE_CHUNK" > ${COOLSERV}/next_map
+	;;
+	bayou | bayoubend)
+	    echo "MAP_OVERRIDE_BAYOUBEND" > ${COOLSERV}/next_map
+	;;
+	crag)
+	    echo "MAP_OVERRIDE_CRAG" > ${COOLSERV}/next_map
+	;;
+	cogmap)
+	    echo "MAP_OVERRIDE_COGMAP" > ${COOLSERV}/next_map
+	;;
+	atlas)
+	    echo "MAP_OVERRIDE_ATLAS" > ${COOLSERV}/next_map
+	;;
+	*)
+	    # echo "MAP_OVERRIDE_{$1^^}" > ${COOLSERV}/next_map
+	;;
+    esac
+fi
+
+
 OLDLIVE=`readlink -f ${COOLSERV}/live`
 OLDBILD=`readlink -f ${COOLSERV}/build`
 
@@ -92,7 +123,6 @@ sed -Ei "s/(^var\/global\/vcs_revision.*\=).*/\1 \"${VCS_REVISION}\"/" _std/__bu
 sed -Ei "s/(^var\/global\/vcs_author.*\=).*/\1 \"${VCS_AUTHOR}\"/" _std/__build.dm
 
 
-
 echo "########## Stage 2: DreamMaker" >> ${COOLSERV}/buildlog.txt
 
 # Build da sauce!
@@ -123,11 +153,11 @@ cd ${OLDBILD}/browserassets
 echo "########## Stage 3: NPM" >> ${COOLSERV}/buildlog.txt
 
 # Mmhm!
-npm install &>> ${COOLSERV}/buildlog.txt
-if [ $? -ne 0 ]; then
+#npm install &>> ${COOLSERV}/buildlog.txt
+#if [ $? -ne 0 ]; then
     # NPM! You fail us! >:C
-    exit 3
-fi
+#    exit 3
+#fi
 
 echo "########## Stage 4: Grunt" >> ${COOLSERV}/buildlog.txt
 
