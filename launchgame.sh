@@ -6,7 +6,7 @@ LOCKFILE=${LIVEDIR}/daemon-in-the-dark
 source /home/ss13/byond/bin/byondsetup
 
 
-for t in {1..12}
+for t in {1..3}
 do
     if [ -z "$(ps -C DreamDaemon | grep DreamDaemon)" ]
     then
