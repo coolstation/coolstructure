@@ -29,7 +29,7 @@ do
 	# Launch the game server in background.
 	# Yes, I really actually meant in the background this time!
 		echo "ok so this is the line before the server should launch, and im excited?????" > ./fart_busshole
-        /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted &
+        /home/ss13/byond/bin/DreamDaemon "${LIVEDIR}/coolstation.dmb" 8085 -trusted -invisible &
 
 	# Grab the background process' PID
 	DD_PID=$!
